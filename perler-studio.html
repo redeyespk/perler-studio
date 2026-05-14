@@ -1086,16 +1086,54 @@ function renderImgStats(){
 // 图纸模式：带坐标编号和色号标注
 // ═══════════════════════════════════════════════════════
 function exportBlueprint(){
-  if(!imgPatternData.length){
-    alert('请先生成图案');
-    return;
+  // 优先使用图片图案，否则使用拼豆板图案
+  let patternData=imgPatternData;
+  let useImgPattern=false;
+  
+  if(!patternData.length){
+    if(!currentPattern.length){
+      alert('请先生成图案');
+      return;
+    }
+    // 从 currentPattern 构建数据
+    const size=currentPattern.length;
+    patternData=[];
+    for(let r=0;r<size;r++){
+      patternData[r]=[];
+      for(let c=0;c<size;c++){
+        const v=currentPattern[r][c];
+        const pal=PALETTE.find(p=>p.id===v)||PALETTE[0];
+        const invCode=INV_COLOR_MAP[parseInt(v)]||'?';
+        patternData[r][c]={hex:pal.hex,invCode,pid:v};
+      }
+    }
+  } else {
+    useImgPattern=true;
   }
-  const rows=imgPatternData.length;
-  const cols=imgPatternData[0].length;
+  
+  const rows=patternData.length;
+  const cols=patternData[0].length;
   const cell=24;
   const margin=40;
   const topMargin=50;
-  const bottomLegend=120;
+  
+  // 收集用色信息
+  const colorInfo={};
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const item=patternData[r][c];
+      const hex=item.hex||'#888';
+      const invCode=item.invCode||'?';
+      if(!colorInfo[invCode]){
+        colorInfo[invCode]={hex,invCode,count:0};
+      }
+      colorInfo[invCode].count++;
+    }
+  }
+  delete colorInfo['?'];
+  
+  const bottomLegend=Math.max(120,Math.ceil(Object.keys(colorInfo).length/8)*56+20);
+  
   const canvas=document.createElement('canvas');
   canvas.width=margin*2+cols*cell;
   canvas.height=topMargin+rows*cell+bottomLegend;
@@ -1104,20 +1142,6 @@ function exportBlueprint(){
   // 背景
   ctx.fillStyle='#F5F3EF';
   ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // 收集用色信息
-  const colorInfo={};
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const {hex,invCode}=imgPatternData[r][c];
-      if(!colorInfo[invCode]){
-        colorInfo[invCode]={hex,invCode,count:0};
-      }
-      colorInfo[invCode].count++;
-    }
-  }
-  // 删除背景色统计（如果有的话）
-  delete colorInfo['?'];
 
   // 绘制列编号（顶部）
   ctx.fillStyle='#3D3830';
@@ -1138,7 +1162,9 @@ function exportBlueprint(){
   ctx.font='9px monospace';
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
-      const {hex,invCode}=imgPatternData[r][c];
+      const item=patternData[r][c];
+      const hex=item.hex||'#888';
+      const invCode=item.invCode||'?';
       const x=margin+c*cell;
       const y=topMargin+r*cell;
       // 填充颜色
@@ -1159,7 +1185,7 @@ function exportBlueprint(){
   const sortedColors=Object.values(colorInfo).sort((a,b)=>b.count-a.count);
   const legendY=topMargin+rows*cell+20;
   const swatchSize=36;
-  const perRow=Math.floor((canvas.width-margin*2)/(swatchSize+60));
+  const perRow=Math.min(sortedColors.length,Math.floor((canvas.width-margin*2)/(swatchSize+60)));
 
   sortedColors.forEach((info,idx)=>{
     const col=idx%perRow;
@@ -1367,7 +1393,8 @@ function exportPatternPNG(){
 }
 
 function exportPatternSVG(){
-  if(!currentPattern.length)return;
+  if(!currentPattern.length)generatePattern();
+  if(!currentPattern.length){alert('请先生成图案');return;}
   const size=currentPattern.length;
   const cell=12;
   let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size*cell+160}" height="${size*cell+20}">`;
@@ -1392,7 +1419,8 @@ function exportPatternSVG(){
 }
 
 function exportColorList(){
-  if(!currentPattern.length)return;
+  if(!currentPattern.length)generatePattern();
+  if(!currentPattern.length){alert('请先生成图案');return;}
   let txt='拼豆图案色号清单\n====================\n';
   Object.entries(currentCounts).filter(([k])=>k!=='0').sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{
     const pal=PALETTE.find(p=>String(p.id)===k)||PALETTE[0];
