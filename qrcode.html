@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perler Studio - 扫码访问</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #FAF8F5 0%, #F5F3EF 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 8px 40px rgba(60,50,40,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+    .logo {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      color: #C87050;
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #8B8680;
+      margin: 0 0 32px;
+      font-size: 16px;
+    }
+    .qr-container {
+      background: #FAF8F5;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .qr-container img {
+      width: 200px;
+      height: 200px;
+    }
+    .url {
+      background: #F5F3EF;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-family: monospace;
+      color: #3D3830;
+      font-size: 14px;
+      word-break: break-all;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background: #C87050;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(200,112,80,0.3);
+    }
+    .tips {
+      margin-top: 24px;
+      color: #8B8680;
+      font-size: 14px;
+      text-align: left;
+    }
+    .tips li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🎨</div>
+    <h1>Perler Studio</h1>
+    <p class="subtitle">拼豆像素图案工作室</p>
+    
+    <div class="qr-container">
+      <!-- 二维码由API生成 -->
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://redeyespk.github.io/perler-studio/&bgcolor=FAF8F5&color=3D3830" alt="Perler Studio QR Code">
+    </div>
+    
+    <div class="url">redeyespk.github.io/perler-studio</div>
+    
+    <a href="https://redeyespk.github.io/perler-studio/" class="btn" target="_blank">立即访问</a>
+    
+    <ul class="tips">
+      <li>📱 截图保存二维码，微信扫一扫访问</li>
+      <li>💾 长按二维码图片可直接保存</li>
+      <li>🔄 GitHub Pages 部署需等待 2-5 分钟</li>
+    </ul>
+  </div>
+</body>
+</html>
